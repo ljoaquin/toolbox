@@ -12,16 +12,26 @@ typedef struct
 	int len;
 }buf_t;
 
-typedef std::queue<unsigned char*> queue_t;
+typedef struct
+{
+	std::queue<unsigned char*> queue;
+	pthread_mutex_t lock;
+}queue_t;
+
+static const int READ_AVAILABLE = 1 << 1;
+static const int WRITE_AVAILABLE = 1 << 2;
+
+// typedef std::queue<unsigned char*> queue_t;
 static queue_t send_queue;
 static queue_t recv_queue;
 
+// delete items and clear
 void clear_queue(queue_t& queue)
 {
-	while(queue.size())
+	while(queue.queue.size())
 	{
-		unsigned char* buf = queue.front();
-		queue.pop();
+		unsigned char* buf = queue.queue.front();
+		queue.queue.pop();
 		delete[] buf;
 	}
 }
@@ -36,22 +46,70 @@ void print_binary(char* buf, int len)
 	printf("]\n");
 }
 
+void peek(int fd, int& result)
+{
+	int sockfd = fd;
+	fd_set rfds, wfds;
+	timeval tv = { 0, 0 };
+	FD_ZERO(&rfds);
+	FD_ZERO(&wfds);
+	FD_SET(sockfd, &rfds);
+	FD_SET(sockfd, &wfds);
+	int flag = select(sockfd + 1, &rfds, &wfds, NULL, &tv);
+	// printf("select %d\n", flag);
+
+	result = 0;
+	if(FD_ISSET(sockfd, &rfds))
+	{
+		result = result | READ_AVAILABLE;
+	}
+	if(FD_ISSET(sockfd, &wfds))
+	{
+		result = result | WRITE_AVAILABLE;
+	}
+}
+
 void* run(void* arg)
 {
-	printf("run\n");
+	int sockfd = *((int*)arg);
 
-	// int val = *((int*)arg) * 2;
-	// int* ret_ptr = (int*)malloc(sizeof(int));
-	// *ret_ptr = val;
-	// return ret_ptr;
+	printf("run sockfd %d\n", sockfd);
+
+	int status = 0;
 
 	while(1)
 	{
-		fd_set rfds, wfds;
-		timeval tv = { 0, 0 };
-		FD_ZERO(&rfds);
-		FD_ZERO(&wfds);
+		// printf("loop\n");
 
+		int r = 0;
+		peek(sockfd, r);
+		if(r & READ_AVAILABLE)
+		{
+			// printf("read available\n");
+			const int buf_len = 32;
+			char buf[buf_len];
+			memset(buf, 0, buf_len);
+			int nread = recv(sockfd, buf, buf_len, 0);
+			printf("recv %d, %s\n", nread, buf);
+		}
+		if(r & WRITE_AVAILABLE)
+		{
+			pthread_mutex_lock(&send_queue.lock);
+			if(send_queue.queue.size() > 0)
+			{
+				for (int i = 0; i < send_queue.queue.size(); ++i)
+				{
+					char* buf = (char*)send_queue.queue.front();
+					int sent = send(sockfd, buf, strlen(buf), 0);
+					printf("sent %d, %s\n", sent, buf);
+				}
+				clear_queue(send_queue);
+			}
+			pthread_mutex_unlock(&send_queue.lock);
+		}
+		status = r;
+
+		usleep(1 * 1000);
 	}
 }
 
@@ -81,10 +139,11 @@ int main(int argc, char const *argv[])
 
 
 
-	// pthread_t net_thread;
-	// assert(pthread_create(&net_thread, NULL, run, &val) == 0);
-	// assert(pthread_detach(net_thread) == 0);
+	pthread_t net_thread;
+	assert(pthread_create(&net_thread, NULL, run, &sockfd) == 0);
+	assert(pthread_detach(net_thread) == 0);
 
+	// print_select(sockfd);
 
 
 	const int input_buf_len = 1024;
@@ -103,16 +162,21 @@ int main(int argc, char const *argv[])
 		memset(send_buf, 0, send_buf_len);
 		memcpy(send_buf, input_buf, strlen(input_buf));
 
-		int nsent = send(sockfd, send_buf, send_buf_len - 1, 0);
-		printf("nsent: %d\n", nsent);
+		// int nsent = send(sockfd, send_buf, send_buf_len - 1, 0);
+		// printf("nsent: %d\n", nsent);
+		// print_select(sockfd);
 
-		send_queue.push(send_buf);
-		// printf("queue len: %d\n", send_queue.size());
+		pthread_mutex_lock(&send_queue.lock);
+		send_queue.queue.push(send_buf);
+		// printf("queue len: %d\n", send_queue.queue.size());
+		pthread_mutex_unlock(&send_queue.lock);
 
 		if(input_buf[0] == 'q')
 		{
 			break;
 		}
+
+		sleep(1);
 	}
 
 	printf("safe quit\n");
