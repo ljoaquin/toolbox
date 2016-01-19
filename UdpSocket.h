@@ -4,6 +4,10 @@
 #include <string>
 #include "socketutils.h"
 
+#ifndef _WIN32
+#include <arpa/inet.h>
+#endif
+
 namespace toolbox
 {
 

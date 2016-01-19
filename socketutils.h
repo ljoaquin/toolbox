@@ -7,7 +7,7 @@
 
 namespace toolbox
 {
-	void print_bytes(unsigned char* buf, int len);
+	void print_bytes(void* buf, int len);
 
 	int set_reuseaddr(int sockfd);
 

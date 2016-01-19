@@ -122,7 +122,7 @@ namespace toolbox
 		}
 
 		struct sockaddr_in addr;
-		int addr_len = sizeof(addr);
+		socklen_t addr_len = sizeof(addr);
 
 		int nread = recvfrom(m_sockfd, (char*)buf, buf_len, 0, (sockaddr*)&addr, &addr_len);
 		if (nread == 0 || nread == -1)

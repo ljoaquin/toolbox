@@ -1,18 +1,19 @@
 #include "socketutils.h"
 #include <stdio.h>
-#ifdef _WIN32
-#include <WinSock2.h>
+#ifndef _WIN32
+#include <sys/socket.h>
+#include <sys/time.h>
 #endif
 
 namespace toolbox
 {
 
-	void print_bytes(unsigned char* buf, int len)
+	void print_bytes(void* buf, int len)
 	{
 		printf("[ ");
 		for (int i = 0; i < len; ++i)
 		{
-			printf("0x%.2x ", buf[i]);
+			printf("0x%.2x ", ((unsigned char*)buf)[i]);
 		}
 		printf("]\n");
 	}
@@ -41,7 +42,7 @@ namespace toolbox
 		FD_ZERO(&fds);
 		FD_SET(fd, &fds);
 
-		int r;
+		int r = -1;
 		if (rw == 'r')
 		{
 			r = select(fd, &fds, NULL, NULL, &tv);
