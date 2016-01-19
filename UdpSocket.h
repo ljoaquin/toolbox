@@ -7,6 +7,19 @@
 namespace toolbox
 {
 
+	/*================================
+
+	@description:
+	minimun udp util
+
+	@usage:
+	toolbox::UdpSocket mysocket(local_port, remote_ip, remote_port);
+	mysocket.sendPacket(str, sizeof(str));
+	mysocket.recvPacket(buf, buf_len);
+	mysocket.closeSocket();
+
+	================================*/
+
 	class UdpSocket
 	{
 	public:
@@ -33,7 +46,8 @@ namespace toolbox
 
 		bool sendPacket(unsigned char* data, unsigned int len);
 		bool recvPacket(unsigned char* buf, unsigned int buf_len);
-		bool waitForRecv(int millisecs);
+		// millisecs: timeout, if packet available, return immediately
+		bool waitForPacket(int millisecs);
 
 		void closeSocket();
 

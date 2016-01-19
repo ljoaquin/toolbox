@@ -133,7 +133,7 @@ namespace toolbox
 		return true;
 	}
 
-	bool UdpSocket::waitForRecv(int millisecs)
+	bool UdpSocket::waitForPacket(int millisecs)
 	{
 		if (!select_for_read(m_sockfd, millisecs))
 		{
