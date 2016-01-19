@@ -69,14 +69,34 @@ void peek(int fd, int& result)
 	}
 }
 
+typedef struct
+{
+	pthread_cond_t cond;
+	pthread_mutex_t lock;
+}cond_signal_t;
+
+static cond_signal_t s_signal;
+
+void thread_wait()
+{
+	pthread_mutex_lock(&s_signal.lock);
+	printf("net thread waiting...\n");
+	pthread_cond_wait(&s_signal.cond, &s_signal.lock);
+	pthread_mutex_unlock(&s_signal.lock);
+}
+
 void* run(void* arg)
 {
 	int sockfd = *((int*)arg);
 
 	printf("run sockfd %d\n", sockfd);
 
-	int status = 0;
+	pthread_cond_init(&s_signal.cond, NULL);
+	pthread_mutex_init(&s_signal.lock, NULL);
 
+	thread_wait();
+
+	bool is_response = false;
 	while(1)
 	{
 		// printf("loop\n");
@@ -91,6 +111,7 @@ void* run(void* arg)
 			memset(buf, 0, buf_len);
 			int nread = recv(sockfd, buf, buf_len, 0);
 			printf("recv %d, %s\n", nread, buf);
+			is_response = true;
 		}
 		if(r & WRITE_AVAILABLE)
 		{
@@ -107,7 +128,12 @@ void* run(void* arg)
 			}
 			pthread_mutex_unlock(&send_queue.lock);
 		}
-		status = r;
+
+		if(is_response)
+		{
+			thread_wait();
+			is_response = false;
+		}
 
 		usleep(1 * 1000);
 	}
@@ -170,6 +196,11 @@ int main(int argc, char const *argv[])
 		send_queue.queue.push(send_buf);
 		// printf("queue len: %d\n", send_queue.queue.size());
 		pthread_mutex_unlock(&send_queue.lock);
+
+		pthread_mutex_lock(&s_signal.lock);
+		printf("wake net thread\n");
+		pthread_cond_signal(&s_signal.cond);
+		pthread_mutex_unlock(&s_signal.lock);
 
 		if(input_buf[0] == 'q')
 		{
