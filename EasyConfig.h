@@ -2,7 +2,7 @@
 #define __EASY_CONFIG_H__
 
 #include <string>
-#include "document.h"
+#include "rapidjson/document.h"
 
 /*================================
 
