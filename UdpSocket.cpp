@@ -12,6 +12,13 @@
 namespace toolbox
 {
 
+	unsigned int UdpSocket::m_nRecvBufLen = 1024;
+
+	void UdpSocket::setRecvBufLen(unsigned int newLen)
+	{
+		m_nRecvBufLen = newLen;
+	}
+
 	UdpSocket::UdpSocket()
 	{
 #ifdef _WIN32
@@ -19,7 +26,7 @@ namespace toolbox
 #endif
 	}
 
-	UdpSocket::UdpSocket(short local_port)
+	UdpSocket::UdpSocket(unsigned short local_port)
 	{
 #ifdef _WIN32
 		winsock_init();
@@ -27,7 +34,7 @@ namespace toolbox
 		init(local_port);
 	}
 
-	UdpSocket::UdpSocket(short local_port, const std::string& ip, short port)
+	UdpSocket::UdpSocket(unsigned short local_port, const std::string& ip, unsigned short port)
 	{
 #ifdef _WIN32
 		winsock_init();
@@ -49,7 +56,7 @@ namespace toolbox
 		close(m_sockfd);
 	}
 
-	bool UdpSocket::init(short local_port)
+	bool UdpSocket::init(unsigned short local_port)
 	{
 		int sockfd = socket(PF_INET, SOCK_DGRAM, 0);
 		if (sockfd == -1)
@@ -73,7 +80,7 @@ namespace toolbox
 		struct sockaddr_in addr;
 		addr.sin_family = AF_INET;
 		inet_aton("0.0.0.0", &addr.sin_addr);
-		addr.sin_port = htons(9999);
+		addr.sin_port = htons(local_port);
 
 		r = bind(sockfd, (struct sockaddr*)&addr, sizeof(addr));
 		if (r)
@@ -86,7 +93,7 @@ namespace toolbox
 		return true;
 	}
 
-	void UdpSocket::setRemote(const std::string& ip, short port)
+	void UdpSocket::setRemote(const std::string& ip, unsigned short port)
 	{
 		m_remoteAddr.sin_family = AF_INET;
 		inet_aton(ip.c_str(), &m_remoteAddr.sin_addr);
@@ -113,16 +120,14 @@ namespace toolbox
 		return true;
 	}
 
-	bool UdpSocket::recvPacket(unsigned char* buf, unsigned int buf_len)
+	bool UdpSocket::recvPacket(recv_callback cb)
 	{
-		if (!buf)
-		{
-			m_eError = ERR::INVALID_ARG;
-			return false;
-		}
-
 		struct sockaddr_in addr;
 		socklen_t addr_len = sizeof(addr);
+
+		const unsigned int buf_len = m_nRecvBufLen;
+		unsigned char* buf = new unsigned char[buf_len];
+		memset(buf, 0, buf_len);
 
 		int nread = recvfrom(m_sockfd, (char*)buf, buf_len, 0, (sockaddr*)&addr, &addr_len);
 		if (nread == 0 || nread == -1)
@@ -130,10 +135,15 @@ namespace toolbox
 			m_eError = ERR::RECV_NONE;
 			return false;
 		}
+
+		cb(buf, nread);
+
+		delete[] buf;
+
 		return true;
 	}
 
-	bool UdpSocket::waitForPacket(int millisecs)
+	bool UdpSocket::isRecvReady(int millisecs)
 	{
 		if (!select_for_read(m_sockfd, millisecs))
 		{
