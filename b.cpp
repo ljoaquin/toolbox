@@ -7,6 +7,28 @@
 #define REMOTE_IP "127.0.0.1"
 #define REMOTE_PORT 9999
 
+
+void on_recv(unsigned char* buf, unsigned int nread)
+{
+	printf("on_recv(%d): ", strlen((char*)buf));
+	toolbox::print_bytes(buf, strlen((char*)buf));
+}
+
+void test_select()
+{
+	printf("%s\n", __FUNCTION__);
+
+	toolbox::UdpSocket mysocket(LOCAL_PORT);
+	mysocket.setRemote(REMOTE_IP, REMOTE_PORT);
+
+	bool b = mysocket.isRecvReady(1000 * 10);
+	printf("ready: %d\n", b);
+
+	mysocket.recvPacket(on_recv);
+
+	getchar();
+}
+
 class Coder
 {
 public:
@@ -44,12 +66,6 @@ void test_recv2()
 		mysocket.debugPrint();
 	}
 	getchar();
-}
-
-void on_recv(unsigned char* buf, unsigned int nread)
-{
-	printf("on_recv(%d): ", strlen((char*)buf));
-	toolbox::print_bytes(buf, strlen((char*)buf));
 }
 
 void test_recv()
@@ -132,7 +148,9 @@ int main(int argc, char const *argv[])
 {
 	printf("hello world\n");
 
-	test_both(argc, argv);
+	//test_both(argc, argv);
+
+	test_select();
 
 	return 0;
 }
