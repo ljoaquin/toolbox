@@ -45,11 +45,11 @@ namespace toolbox
 		int r = -1;
 		if (rw == 'r')
 		{
-			r = select(fd, &fds, NULL, NULL, &tv);
+			r = select(fd + 1, &fds, NULL, NULL, &tv);
 		}
 		else if (rw == 'w')
 		{
-			r = select(fd, NULL, &fds, NULL, &tv);
+			r = select(fd + 1, NULL, &fds, NULL, &tv);
 		}
 		if (r == -1 || r == 0)
 		{
