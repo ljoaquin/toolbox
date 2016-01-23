@@ -148,9 +148,9 @@ int main(int argc, char const *argv[])
 {
 	printf("hello world\n");
 
-	//test_both(argc, argv);
+	test_both(argc, argv);
 
-	test_select();
+	// test_select();
 
 	return 0;
 }
