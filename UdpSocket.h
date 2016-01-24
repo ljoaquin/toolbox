@@ -20,8 +20,8 @@ namespace toolbox
 	@usage:
 	toolbox::UdpSocket mysocket(local_port);
 	mysocket setRemote(remote_ip, remote_port);
-	mysocket.sendPacket(str, sizeof(str));
-	mysocket.recvPacket(on_recv);
+	mysocket.send(str, sizeof(str));
+	mysocket.recv(on_recv);
 	mysocket.closeSocket();
 
 	================================*/

@@ -30,7 +30,7 @@ LDFLAGS = -lstdc++
  
 SRC = b.cpp socketutils.cpp UdpSocket.cpp
  
-TARGET = b.out
+TARGET = run_me
  
  
  
@@ -44,7 +44,7 @@ $(TARGET) : $(SRC)
  
 rebuild :
  
-	rm -f $(TARGET)
+	make clean
  
 	make
  
@@ -53,3 +53,5 @@ rebuild :
 clean :
  
 	rm -f $(TARGET)
+
+	rm -rf $(TARGET).dSYM
