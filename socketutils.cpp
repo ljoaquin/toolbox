@@ -2,6 +2,7 @@
 #include <stdio.h>
 #ifndef _WIN32
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <sys/time.h>
 #endif
 
@@ -30,6 +31,26 @@ namespace toolbox
 		const void* opt_val = (const void*)&opt;
 #endif
 		return setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, opt_val, sizeof(opt));
+	}
+
+	int bind(int sockfd, unsigned short port)
+	{
+		struct sockaddr_in addr;
+		addr.sin_family = AF_INET;
+		inet_aton("0.0.0.0", &addr.sin_addr);
+		addr.sin_port = htons(port);
+
+		return ::bind(sockfd, (struct sockaddr*)&addr, sizeof(addr));
+	}
+
+	int connect(int sockfd, const char* ip, unsigned short port)
+	{
+		struct sockaddr_in addr;
+		addr.sin_family = AF_INET;
+		inet_aton(ip, &addr.sin_addr);
+		addr.sin_port = htons(port);
+
+		return ::connect(sockfd, (const struct sockaddr*)&addr, sizeof(addr));
 	}
 
 	static bool select_rw(int fd, int millisecs, char rw)

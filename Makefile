@@ -28,7 +28,8 @@ LDFLAGS = -lstdc++
  
  
  
-SRC = b.cpp socketutils.cpp UdpSocket.cpp
+# SRC = b.cpp socketutils.cpp UdpSocket.cpp
+SRC = socketutils.cpp TcpSocket.cpp c.cpp
  
 TARGET = run_me
  
