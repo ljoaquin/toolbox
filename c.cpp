@@ -30,6 +30,7 @@ int main(int argc, char const *argv[])
 		printf("ip %s\nport %hu\n", ip, port);
 
 		TcpSocket sock;
+		assert(sock.Init());
 		assert(sock.Connect(ip, port));
 
 		assert(sock.SetNonBlocking());
@@ -82,6 +83,7 @@ int main(int argc, char const *argv[])
 
 		unsigned short port = 9999;
 		TcpSocket sock;
+		assert(sock.Init());
 		r = sock.Listen(port);
 
 		assert(r == true);
@@ -92,6 +94,7 @@ int main(int argc, char const *argv[])
 		{
 			printf("waiting for connection...\n");
 			TcpSocket client;
+			assert(client.Init());
 			char ip_buf[32];
 			memset(ip_buf, 0, 32);
 			bool b = sock.Accept(client, ip_buf);

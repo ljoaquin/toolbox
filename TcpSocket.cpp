@@ -11,16 +11,36 @@
 namespace toolbox
 {
 
-	TcpSocket::TcpSocket()
+    TcpSocket::TcpSocket()
+    {
+//        m_error = 0;
+    }
+
+	bool TcpSocket::Init()
 	{
 		m_sockfd = ::socket(PF_INET, SOCK_STREAM, 0);
+        if(m_sockfd == -1)
+        {
+            Error();
+            return false;
+        }
 
-		// m_error = 0;
+        // may cause sigpipe, hard to detect
+        int opt = 1;
+        int optlen = sizeof(opt);
+        if(::setsockopt(m_sockfd, SOL_SOCKET, SO_NOSIGPIPE, &opt, optlen))
+        {
+            Error();
+            return false;
+        }
+        
+        return true;
 	}
 
 	TcpSocket::~TcpSocket()
 	{
-		::close(m_sockfd);
+		if(m_sockfd != -1)
+            Close();
 	}
 
 	void TcpSocket::Error()
@@ -29,8 +49,22 @@ namespace toolbox
 		perror("error");
 	}
 
+    void TcpSocket::Close()
+    {
+        if(::close(m_sockfd))
+            Error();
+        else
+            m_sockfd = -1;
+    }
+
 	bool TcpSocket::Listen(unsigned short port, int backlog)
 	{
+        if(toolbox::set_reuseaddr(m_sockfd))
+        {
+            Error();
+            return false;
+        }
+
 		if(toolbox::bind(m_sockfd, port))
 		{
 			Error();
@@ -94,17 +128,16 @@ namespace toolbox
 		return true;
 	}
 
+    bool is_blocking_errno()
+    {
+        return (errno == 0 || errno == EAGAIN || errno == EWOULDBLOCK);
+    }
+
 	int TcpSocket::Send(unsigned char* data, unsigned int len)
 	{
-		// may cause sigpipe, hard to detect
-		int opt = 1;
-		int optlen = sizeof(opt);
-		int r = ::setsockopt(m_sockfd, SOL_SOCKET, SO_NOSIGPIPE, &opt, optlen);
-		if(r) Error();
 		int nsent = ::write(m_sockfd, data, len);
-
 		// int sent = ::send(m_sockfd, data, len, MSG_NOSIGNAL);
-		if(nsent < 0)
+		if(nsent < 0 && !is_blocking_errno())
 		{
 			Error();
 		}
@@ -114,7 +147,7 @@ namespace toolbox
 	int TcpSocket::Recv(unsigned char* buf, unsigned int len)
 	{
 		int nread = ::read(m_sockfd, buf, len);
-		if(nread < 0)
+		if(nread < 0 && !is_blocking_errno())
 		{
 			Error();
 		}

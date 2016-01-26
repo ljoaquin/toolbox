@@ -6,11 +6,16 @@
 namespace toolbox
 {
 
+    bool is_blocking_errno();
+
 	class TcpSocket
 	{
 	public:
 		TcpSocket();
 		virtual ~TcpSocket();
+
+        bool Init();
+        void Close();
 
 		// for sever
 		bool Listen(unsigned short port, int backlog = 1);
