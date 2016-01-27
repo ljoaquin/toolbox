@@ -25,10 +25,10 @@ namespace toolbox
 		packet->index = packet->len;
 	}
 
-	static void packet_get(packet_t* packet, int index, void* value, int value_size)
+	static void packet_get(packet_t* packet, int index, void* buf, int buf_len)
 	{
-		memcpy(value, packet->buf + index, value_size);
-		packet->index = index + value_size;
+		memcpy(buf, packet->buf + index, buf_len);
+		packet->index = index + buf_len;
 	}
 
 	void packet_set(packet_t* packet, void* value, int value_size)
@@ -36,9 +36,18 @@ namespace toolbox
 		packet_set(packet, packet->index, value, value_size);
 	}
 
-	void packet_get(packet_t* packet, void* value, int value_size)
+	void packet_get(packet_t* packet, void* buf, int buf_len)
 	{
-		packet_get(packet, packet->index, value, value_size);
+		packet_get(packet, packet->index, buf, buf_len);
+	}
+	
+	void packet_resize(packet_t* packet)
+	{
+		unsigned char* new_buf = new unsigned char[packet->len];
+		packet_get(packet, 0, new_buf, packet->len);
+		delete [] packet->buf;
+		packet->buf = new_buf;
+		packet->capacity = packet->len;
 	}
 
 }

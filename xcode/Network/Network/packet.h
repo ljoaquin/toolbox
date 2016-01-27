@@ -19,13 +19,11 @@ namespace toolbox
 
 	void packet_destory(packet_t* packet);
 
-//	void packet_set(packet_t* packet, int index, void* value, int value_size);
-//
-//	void packet_get(packet_t* packet, int index, void* value, int size);
+	void packet_set(packet_t* packet, void* value, int value_size);
 
-	void packet_set(packet_t* packet, void* value, int size);
-
-	void packet_get(packet_t* packet, void* value, int size);
+	void packet_get(packet_t* packet, void* buf, int buf_len);
+	
+	void packet_resize(packet_t* packet);
 
 }
 
