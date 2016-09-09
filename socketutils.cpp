@@ -21,9 +21,6 @@ namespace toolbox
 
 	int set_reuseaddr(int sockfd)
 	{
-		if (sockfd == -1)
-			return -1;
-
 		int opt = 1;
 #ifdef _WIN32
 		const char* opt_val = (const char*)&opt;
