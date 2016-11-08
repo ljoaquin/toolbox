@@ -13,6 +13,7 @@
 
 void run_server();
 
+
 int main(int argc, char const *argv[])
 {
     puts("test server");
@@ -20,6 +21,8 @@ int main(int argc, char const *argv[])
     toolbox::socket_init();
 
     run_server();
+
+    //printf("%s\n", toolbox::get_ipaddress("google.com"));
 
     toolbox::socket_cleanup();
 

@@ -55,11 +55,11 @@ namespace toolbox
 
     static bool select_rw(int fd, int millisecs, char rw)
     {
-        timeval tv;
+        struct timeval tv;
         tv.tv_sec = millisecs / 1000;
         tv.tv_usec = (millisecs % 1000) * 1000;
 
-        fd_set fds;
+        struct fd_set fds;
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
 
@@ -148,6 +148,15 @@ namespace toolbox
 #else
         return 0;
 #endif
+    }
+
+    const char* hostname_to_ip(const char* hostname)
+    {
+        struct hostent* hp = ::gethostbyname("google.com");
+        if(!hp) return NULL;
+        in_addr addr;
+        memcpy(&addr, hp->h_addr, sizeof(addr));
+        return inet_ntoa(addr);
     }
 
 }
