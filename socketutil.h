@@ -21,12 +21,10 @@ namespace toolbox
 
     int close_socket(int fd);
 
-#ifdef _WIN32
+    // for windows, do nothing in unix platform
+    int socket_init();
+    int socket_cleanup();
 
-    int winsock_init();
-    int winsock_cleanup();
-
-#endif
 }
 
 #endif // __SOCKET_TOOLS_H__

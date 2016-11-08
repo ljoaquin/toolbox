@@ -17,11 +17,11 @@ int main(int argc, char const *argv[])
 {
     puts("test server");
 
-    toolbox::winsock_init();
+    toolbox::socket_init();
 
     run_server();
 
-    toolbox::winsock_cleanup();
+    toolbox::socket_cleanup();
 
 
     return 0;

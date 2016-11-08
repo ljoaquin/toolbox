@@ -15,18 +15,6 @@ namespace toolbox
 {
 
 #ifdef _WIN32
-    int winsock_init()
-    {
-        WSADATA wsaData;
-        WORD version = MAKEWORD(2, 0);
-        return WSAStartup(version, &wsaData);
-    }
-
-    int winsock_cleanup()
-    {
-        return WSACleanup();
-    }
-
     // internal
     static int inet_aton(const char* ip, in_addr* buf)
     {
@@ -139,6 +127,26 @@ namespace toolbox
         return ::closesocket(fd);
 #else
         return ::close(fd);
+#endif
+    }
+
+    int socket_init()
+    {
+#ifdef _WIN32
+        WSADATA wsaData;
+        WORD version = MAKEWORD(2, 0);
+        return WSAStartup(version, &wsaData);
+#else
+        return 0;
+#endif
+    }
+
+    int socket_cleanup()
+    {
+#ifdef _WIN32
+        return WSACleanup();
+#else
+        return 0;
 #endif
     }
 
