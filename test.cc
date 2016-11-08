@@ -17,7 +17,12 @@ int main(int argc, char const *argv[])
 {
     puts("test server");
 
+    toolbox::winsock_init();
+
     run_server();
+
+    toolbox::winsock_cleanup();
+
 
     return 0;
 }
@@ -54,7 +59,7 @@ void run_server()
         printf("send");
         printf("%d, %s\n", n, buf);
 
-        ::close(clientfd);
+        toolbox::close_socket(clientfd);
 
         if(buf[0] == 'Q')
         {
@@ -62,7 +67,7 @@ void run_server()
         }
     }
 
-    ::close(sockfd);
+    toolbox::close_socket(sockfd);
     puts("end");
 
 }

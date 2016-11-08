@@ -3,6 +3,7 @@
 
 #ifdef _WIN32
 #include <WinSock2.h>
+#include <Ws2tcpip.h>
 #else
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -12,6 +13,26 @@
 
 namespace toolbox
 {
+
+#ifdef _WIN32
+    int winsock_init()
+    {
+        WSADATA wsaData;
+        WORD version = MAKEWORD(2, 0);
+        return WSAStartup(version, &wsaData);
+    }
+
+    int winsock_cleanup()
+    {
+        return WSACleanup();
+    }
+
+    // internal
+    static int inet_aton(const char* ip, in_addr* buf)
+    {
+        return inet_pton(AF_INET, ip, buf); // inet_pton is in Ws2tcpip.h
+    }
+#endif
 
     int set_reuseaddr(int sockfd)
     {
@@ -87,55 +108,38 @@ namespace toolbox
     {
         return select_rw(fd, millisecs, 'w');
     }
-    
+
     int set_blocking(int fd)
     {
+#ifdef _WIN32
+        u_long argp = 0;
+        return ioctlsocket(fd, FIONBIO, &argp);
+#else
         int flags = fcntl(fd, F_GETFL, 0);
         flags &= (~(O_NONBLOCK));
         return fcntl(fd, F_SETFL, flags);
+#endif
     }
 
     int set_nonblocking(int fd)
     {
+#ifdef _WIN32
+        u_long argp = 1;
+        return ioctlsocket(fd, FIONBIO, &argp);
+#else
         int flags = fcntl(fd, F_GETFL, 0);
         flags |= O_NONBLOCK;
         return fcntl(fd, F_SETFL, flags);
-    }
-
-#ifdef _WIN32
-    int winsock_init()
-    {
-        WSADATA wsaData;
-        WORD version = MAKEWORD(2, 0);
-        return WSAStartup(version, &wsaData);
-    }
-
-    int winsock_cleanup()
-    {
-        return WSACleanup();
-    }
-
-    int inet_aton(const char* ip, in_addr* buf)
-    {
-        return inet_pton(AF_INET, ip, buf); // inet_pton is in Ws2tcpip.h
-    }
-
-    int close(int sockfd)
-    {
-        return closesocket(sockfd);
-    }
-
-    int set_blocking(int fd)
-    {
-        u_long argp = 0;
-        ioctlsocket(*ps, FIONBIO, &argp);
-    }
-
-    int set_nonblocking(int fd)
-    {
-        u_long argp = 1;
-        ioctlsocket(*ps, FIONBIO, &argp);
-    }
 #endif
+    }
+
+    int close_socket(int fd)
+    {
+#ifdef _WIN32
+        return ::closesocket(fd);
+#else
+        return ::close(fd);
+#endif
+    }
 
 }

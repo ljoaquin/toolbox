@@ -1,6 +1,10 @@
 #ifndef __SOCKET_TOOLS_H__
 #define __SOCKET_TOOLS_H__
 
+#ifdef _WIN32
+typedef int socklen_t;
+#endif
+
 namespace toolbox
 {
 
@@ -15,6 +19,14 @@ namespace toolbox
 	bool select_for_read(int fd, int millisecs = 0);
 	bool select_for_write(int fd, int millisecs = 0);
 
+    int close_socket(int fd);
+
+#ifdef _WIN32
+
+    int winsock_init();
+    int winsock_cleanup();
+
+#endif
 }
 
 #endif // __SOCKET_TOOLS_H__
