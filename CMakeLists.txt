@@ -13,3 +13,5 @@ if(WIN32)
 	target_link_libraries(echo wsock32 ws2_32)
 	target_link_libraries(client wsock32 ws2_32)
 endif()
+
+add_subdirectory(test)
