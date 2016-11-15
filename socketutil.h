@@ -26,6 +26,9 @@ namespace toolbox
     int socket_cleanup();
 
     const char* get_ipaddress(const char* hostname);
+
+    void sleep(unsigned int millisecs);
+
 }
 
 #endif // __SOCKET_TOOLS_H__

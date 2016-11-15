@@ -152,11 +152,20 @@ namespace toolbox
 
     const char* hostname_to_ip(const char* hostname)
     {
-        struct hostent* hp = ::gethostbyname("google.com");
+        struct hostent* hp = ::gethostbyname(hostname);
         if(!hp) return NULL;
         in_addr addr;
         memcpy(&addr, hp->h_addr, sizeof(addr));
         return inet_ntoa(addr);
+    }
+
+    void sleep(unsigned int millisecs)
+    {
+#ifdef _WIN32
+        Sleep(millisecs);
+#else
+        usleep(millisecs * 1000);
+#endif
     }
 
 }
