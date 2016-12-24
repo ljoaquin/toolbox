@@ -1,5 +1,5 @@
-#ifndef __SOCKET_TOOLS_H__
-#define __SOCKET_TOOLS_H__
+#ifndef __SOCKET_UTIL_H__
+#define __SOCKET_UTIL_H__
 
 #ifdef _WIN32
 typedef int socklen_t;
@@ -31,4 +31,4 @@ namespace toolbox
 
 }
 
-#endif // __SOCKET_TOOLS_H__
+#endif // __SOCKET_UTIL_H__

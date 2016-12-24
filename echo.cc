@@ -51,20 +51,26 @@ void run_server()
 
         printf("clientfd:%d, ip:%s\n", clientfd, inet_ntoa(addr.sin_addr));
 
-        memset(buf, 0, buf_max);
-        int n = ::recv(clientfd, buf, buf_max, 0);
-        printf("recv");
-        printf("%d, %s\n", n, buf);
-
-        n = ::send(clientfd, buf, strlen(buf), 0);
-        printf("send");
-        printf("%d, %s\n", n, buf);
-
-        toolbox::close_socket(clientfd);
-
-        if(buf[0] == 'Q')
+        while(true)
         {
-            break;
+            memset(buf, 0, buf_max);
+            int n = ::recv(clientfd, buf, buf_max, 0);
+            // error or closed by client
+            if(n <= 0) break;
+            printf("recv");
+            printf("%d, %s\n", n, buf);
+
+            n = ::send(clientfd, buf, strlen(buf), 0);
+            // error or closed by client
+            if(n <= 0) break;
+            printf("send");
+            printf("%d, %s\n", n, buf);
+
+            if(buf[0] == 'q')
+            {
+                toolbox::close_socket(clientfd);
+                break;
+            }
         }
     }
 

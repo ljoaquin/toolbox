@@ -129,8 +129,6 @@ void ClientNetwork::networkLoop()
 
         if(toolbox::select_for_read(m_socket.fd, 1))
         {
-            toolbox::log("readable");
-
             std::lock_guard<std::mutex> lock(m_recv_queue.m);
 
             Packet* p = new Packet();
@@ -138,13 +136,13 @@ void ClientNetwork::networkLoop()
             int num_recv = 0;
             while((r = ::recv(m_socket.fd, (char*)p->buf + num_recv, p->size - num_recv, 0)) > 0)
             {
+                // toolbox::log("recv:%d, num_recv:%d", r, num_recv);
+
                 num_recv += r;
                 if(num_recv < p->size)
                 {
                     break;
                 }
-
-                toolbox::log("recv:%d, num_recv:%d, p->buf:%s, p->size:%d", r, num_recv, p->buf, p->size);
 
                 p->resize();
             }
@@ -154,7 +152,7 @@ void ClientNetwork::networkLoop()
                 p->resize(num_recv);
                 m_recv_queue.q.push(p);
 
-                toolbox::log("m_recv_queue.push p->buf:%s, p->size:%d", p->buf, p->size);
+                toolbox::log("m_recv_queue.push p->size:%d", p->size);
             }
             else if(r == 0)
             {
@@ -166,15 +164,9 @@ void ClientNetwork::networkLoop()
                 toolbox::log("[error] recv:%d", r);
             }
         }
-        else
-        {
-            toolbox::log("not readable");
-        }
 
         if(toolbox::select_for_write(m_socket.fd, 1))
         {
-            toolbox::log("writable");
-
             if(m_send_queue.q.size() > 0)
             {
                 std::lock_guard<std::mutex> lock(m_send_queue.m);
@@ -184,8 +176,9 @@ void ClientNetwork::networkLoop()
                 if(r == p->size)
                 {
                     m_send_queue.q.pop();
+                    delete p;
 
-                    toolbox::log("send:%d, p->buf:%s, p->size:%d", r, p->buf, p->size);
+                    toolbox::log("send:%d, p->size:%d", r, p->size);
                 }
                 else if(r == 0)
                 {
@@ -198,12 +191,8 @@ void ClientNetwork::networkLoop()
                 }
             }
         }
-        else
-        {
-            toolbox::log("not writable");
-        }
 
-        toolbox::sleep(1000);
+        toolbox::sleep(1);
     }
 }
 
@@ -216,17 +205,29 @@ void ClientNetwork::send(unsigned char* data, unsigned int len)
     m_send_queue.q.push(p);
 }
 
-int main(int argc, char const *argv[])
+Packet* ClientNetwork::recv()
 {
-    toolbox::log("ClientNetwork test");
+    if(m_recv_queue.q.size() == 0)
+    {
+        return NULL;
+    }
 
-    ClientNetwork cn;
-    cn.connect("127.0.0.1", 12345);
-    getchar();
-    const char* msg = "helloworldhelloworld";
-    cn.send((unsigned char*)msg, strlen(msg));
-    getchar();
-    cn.disconnect();
+    std::lock_guard<std::mutex> lock(m_recv_queue.m);
+    Packet* p = m_recv_queue.q.front();
+    return p;
+}
 
-    return 0;
+bool ClientNetwork::pop_recv()
+{
+    if(m_recv_queue.q.size() == 0)
+    {
+        return false;
+    }
+
+    std::lock_guard<std::mutex> lock(m_recv_queue.m);
+    Packet* p = m_recv_queue.q.front();
+    m_recv_queue.q.pop();
+    delete p;
+
+    return true;
 }

@@ -10,6 +10,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_executable(test_thread test_thread.cc)
-add_executable(ClienNetwork ClientNetwork.cc
+add_executable(ClienNetwork test_client_network.cc
+                            ClientNetwork.cc
                             ${CMAKE_SOURCE_DIR}/socket_util.cc
                             ${CMAKE_SOURCE_DIR}/debug_util.cc)

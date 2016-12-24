@@ -48,7 +48,10 @@ public:
     bool reconnect();
 
     void send(unsigned char* data, unsigned int len);
-    void stop();
+    // get the front packet from recv queue
+    Packet* recv();
+    // recv queue front dequeue, and delete the packet
+    bool pop_recv();
 
 private:
     void networkLoop();
