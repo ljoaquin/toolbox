@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #endif
 
-#include "socketutil.h"
+#include "socket_util.h"
 #include "debug_util.h"
 
 Packet::Packet()
