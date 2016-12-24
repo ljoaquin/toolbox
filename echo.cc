@@ -42,7 +42,7 @@ void run_server()
     sockaddr_in addr;
     socklen_t addrlen = sizeof(addr);
 
-    const int buf_max = 16;
+    const int buf_max = 128;
     char buf[buf_max];
 
     while(true)

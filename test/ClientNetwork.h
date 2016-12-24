@@ -1,5 +1,7 @@
 #include <queue>
 #include <mutex>
+#include <string>
+#include <thread>
 
 class Packet
 {
@@ -14,6 +16,7 @@ public:
 
     // double the size
     void resize();
+    // if new_size is less, data will be truncated
     void resize(int new_size);
 
 public:
@@ -23,14 +26,14 @@ public:
 
 struct packet_queue_t
 {
-    std::queue<Packet> q;
+    std::queue<Packet*> q;
     std::mutex m;
 };
 
 struct socket_t
 {
-    int             fd;
-    std::mutex      m;
+    int         fd;
+    std::mutex  m;
 };
 
 class ClientNetwork
@@ -41,12 +44,10 @@ public:
 
 public:
     bool connect(std::string ip, unsigned short port);
-    //bool send(packet_t* p);
-    //bool recv(packet_t* p);
     bool disconnect();
     bool reconnect();
 
-    void start();
+    void send(unsigned char* data, unsigned int len);
     void stop();
 
 private:
@@ -61,4 +62,6 @@ private:
 
     std::string     m_ip;
     unsigned short  m_port;
+
+    std::thread     m_network_thread;
 };

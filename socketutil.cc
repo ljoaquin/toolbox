@@ -1,5 +1,6 @@
 #include "socketutil.h"
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _WIN32
 #include <WinSock2.h>
@@ -9,6 +10,8 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <netdb.h>
 #endif
 
 namespace toolbox
