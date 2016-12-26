@@ -62,10 +62,6 @@ ClientNetwork::ClientNetwork()
 
 ClientNetwork::~ClientNetwork()
 {
-    if(m_network_thread.joinable())
-    {
-        m_network_thread.join();
-    }
 }
 
 bool ClientNetwork::connect(std::string ip, unsigned short port)
@@ -118,6 +114,12 @@ bool ClientNetwork::disconnect()
     }
 
     m_connected = false;
+
+    if(m_network_thread.joinable())
+    {
+        m_network_thread.join();
+    }
+    
     return true;
 }
 
