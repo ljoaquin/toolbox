@@ -29,6 +29,12 @@ void foo3(string&& from, string& to)
     to = move(from);
 }
 
+std::string g_foo4_str = "foo4 yoyo";
+std::string&& foo4()
+{
+    return std::move(g_foo4_str);
+}
+
 int main()
 {
     A a1;
@@ -38,15 +44,32 @@ int main()
     cout << a3.s << endl;
 
     string str1 = "yo";
-    string str2;
-
-    cout << "str1:" << str1 << "," << "str1:" << str2 << endl;
+    string str2 = "";
 
     foo(str1, str2);
-    // foo2(move(str1), str2);
-    // foo3(move(str1), str2);
+    cout << "foo: str1:" << str1 << ", str2:" << str2 << "\n";
+    
+    str1 = "yo";
+    str2 = "";
 
-    cout << "str1:" << str1 << "," << "str1:" << str2 << endl;
+    foo1(str1, str2);
+    cout << "foo1: str1:" << str1 << ", str2:" << str2 << "\n";
+
+    str1 = "yo";
+    str2 = "";
+
+    foo2(move(str1), str2);
+    cout << "foo2: str1:" << str1 << ", str2:" << str2 << "\n";
+
+    str1 = "yo";
+    str2 = "";
+
+    foo3(move(str1), str2);
+    cout << "foo3: str1:" << str1 << ", str2:" << str2 << "\n";
+
+    std::string s4 = (foo4());
+
+    cout << "foo4:" << g_foo4_str << "\n";
 
     return 0;
 }

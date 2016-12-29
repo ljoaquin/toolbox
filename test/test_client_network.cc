@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ClientNetwork.h"
+#include "client_network.h"
 
 int main(int argc, char const *argv[])
 {
