@@ -1,11 +1,11 @@
-#include "string_format.h"
+#include "string_formater.h"
 
 namespace toolbox
 {
 
-    std::vector<std::string> StringFormat::s_vector_args;
+    std::vector<std::string> string_formater::s_vector_args;
 
-    std::string StringFormat::fill(std::string fmt)
+    std::string string_formater::fill(std::string fmt)
     {
         for(int i = 0; i < s_vector_args.size(); i++)
         {

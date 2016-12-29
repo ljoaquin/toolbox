@@ -1,70 +1,81 @@
+#ifndef __CLIENT_NETWORK_H__
+#define __CLIENT_NETWORK_H__
+
 #include <queue>
 #include <mutex>
 #include <string>
 #include <thread>
 
-class Packet
+namespace toolbox
 {
-public:
-    static const int DEFAULT_SIZE = 16;
 
-public:
-    Packet();
-    ~Packet();
+    class packet
+    {
+    public:
+        static const int DEFAULT_SIZE = 16;
 
-    Packet(int buf_size);
+    public:
+        packet();
+        ~packet();
 
-    // double the size
-    void resize();
-    // if new_size is less, data will be truncated
-    void resize(int new_size);
+        packet(int buf_size);
 
-public:
-    unsigned char* buf;
-    int size;
-};
+        // double the size
+        void resize();
+        // if new_size is less, data will be truncated
+        void resize(int new_size);
 
-struct packet_queue_t
-{
-    std::queue<Packet*> q;
-    std::mutex m;
-};
+    public:
+        unsigned char* buf;
+        int size;
+    };
 
-struct socket_t
-{
-    int         fd;
-    std::mutex  m;
-};
+    struct packet_queue_t
+    {
+        std::queue<packet*> q;
+        std::mutex m;
+    };
 
-class ClientNetwork
-{
-public:
-    ClientNetwork();
-    ~ClientNetwork();
+    struct socket_t
+    {
+        int         fd;
+        std::mutex  m;
+    };
 
-public:
-    bool connect(std::string ip, unsigned short port);
-    bool disconnect();
-    bool reconnect();
+    class client_network
+    {
+    public:
+        client_network();
+        ~client_network();
 
-    void send(unsigned char* data, unsigned int len);
-    // get the front packet from recv queue
-    Packet* recv();
-    // recv queue front dequeue, and delete the packet
-    bool pop_recv();
+        bool connect(std::string ip, unsigned short port);
+        bool disconnect();
+        bool reconnect();
 
-private:
-    void networkLoop();
+        void send(unsigned char* data, unsigned int len);
+        // get the front packet from recv queue
+        packet* recv();
+        // recv queue front dequeue, and delete the packet
+        bool pop_recv();
 
-private:
-    packet_queue_t m_send_queue;
-    packet_queue_t m_recv_queue;
+    private:
+        void network_loop();
 
-    bool            m_connected;
-    socket_t        m_socket;
+        template<typename... Targs>
+        static void log(std::string fmt, Targs... args);
 
-    std::string     m_ip;
-    unsigned short  m_port;
+    private:
+        packet_queue_t m_send_queue;
+        packet_queue_t m_recv_queue;
 
-    std::thread     m_network_thread;
-};
+        bool            m_connected;
+        socket_t        m_socket;
+
+        std::string     m_ip;
+        unsigned short  m_port;
+
+        std::thread     m_network_thread;
+    };
+}
+
+#endif // __CLIENT_NETWORK_H__

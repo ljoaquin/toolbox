@@ -1,5 +1,5 @@
-#ifndef __STRING_FORMAT_H__
-#define __STRING_FORMAT_H__
+#ifndef __STRING_FORMATER_H__
+#define __STRING_FORMATER_H__
 
 #include <vector>
 #include <sstream>
@@ -12,7 +12,7 @@ namespace toolbox
         pass(Targs...){};
     };
 
-    class StringFormat
+    class string_formater
     {
     public:
         template<typename... Targs>
@@ -28,7 +28,7 @@ namespace toolbox
     };
 
     template<typename... Targs>
-    std::string StringFormat::format(std::string fmt, Targs... args)
+    std::string string_formater::format(std::string fmt, Targs... args)
     {
         s_vector_args.clear();
         pass{(collect(args), 1)...};
@@ -36,7 +36,7 @@ namespace toolbox
     }
 
     template<typename T>
-    void StringFormat::collect(T arg)
+    void string_formater::collect(T arg)
     {
         std::stringstream ss;
         ss << arg;
@@ -44,4 +44,4 @@ namespace toolbox
     }
 }
 
-#endif // __STRING_FORMAT_H__
+#endif // __STRING_FORMATER_H__

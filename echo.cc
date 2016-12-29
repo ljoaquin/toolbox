@@ -56,12 +56,14 @@ void run_server()
             memset(buf, 0, buf_max);
             int n = ::recv(clientfd, buf, buf_max, 0);
             // error or closed by client
+            if(n == 0) puts("closed by client");
             if(n <= 0) break;
             printf("recv");
             printf("%d, %s\n", n, buf);
 
             n = ::send(clientfd, buf, strlen(buf), 0);
             // error or closed by client
+            if(n == 0) puts("closed by client");
             if(n <= 0) break;
             printf("send");
             printf("%d, %s\n", n, buf);

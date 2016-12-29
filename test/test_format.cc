@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "string_format.h"
+#include "string_formater.h"
 
 // template<typename T>
 // void push_into_vector(std::vector<std::string>& vector_args, T arg)
@@ -45,11 +45,11 @@ int main()
     
     std::cout << "hello\n";
     
-    std::cout << "result:" << toolbox::StringFormat::format("my name is lin jian, aged 25") << "\n";
-    std::cout << "result:" << toolbox::StringFormat::format("my name is lin jian, aged 25", "lj", 17) << "\n";
-    std::cout << "result:" << toolbox::StringFormat::format("my name is %0, aged %1") << "\n";
-    std::cout << "result:" << toolbox::StringFormat::format("my name is %0, aged %1", "lj", 17) << "\n";
-    std::cout << "result:" << toolbox::StringFormat::format("int %0, float %1, char %2, char string %3", 7, 3.45, 'q', "done!") << "\n";
+    std::cout << "result:" << toolbox::string_formater::format("my name is lin jian, aged 25") << "\n";
+    std::cout << "result:" << toolbox::string_formater::format("my name is lin jian, aged 25", "lj", 17) << "\n";
+    std::cout << "result:" << toolbox::string_formater::format("my name is %0, aged %1") << "\n";
+    std::cout << "result:" << toolbox::string_formater::format("my name is %0, aged %1", "lj", 17) << "\n";
+    std::cout << "result:" << toolbox::string_formater::format("int %0, float %1, char %2, char string %3", 7, 3.45, 'q', "done!") << "\n";
     
     return 0;
 }

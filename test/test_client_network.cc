@@ -5,9 +5,9 @@
 
 int main(int argc, char const *argv[])
 {
-    puts("ClientNetwork test");
+    puts("client_network test");
 
-    ClientNetwork cn;
+    toolbox::client_network cn;
     cn.connect("127.0.0.1", 12345);
     getchar();
     const char* msg = "helloworld";
@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
     cn.send((unsigned char*)msg, strlen(msg));
     getchar();
 
-    Packet* p = NULL;
+    toolbox::packet* p = NULL;
     while((p = cn.recv()) != NULL)
     {
         printf("recv buf:%s, size:%d\n", p->buf, p->size);
