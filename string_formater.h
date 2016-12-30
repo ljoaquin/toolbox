@@ -6,10 +6,10 @@
 
 namespace toolbox
 {
-    struct pass
+    struct pass_t
     {
         template<typename... Targs>
-        pass(Targs...){};
+        pass_t(Targs...){};
     };
 
     class string_formater
@@ -31,7 +31,7 @@ namespace toolbox
     std::string string_formater::format(std::string fmt, Targs... args)
     {
         s_vector_args.clear();
-        pass{(collect(args), 1)...};
+        pass_t{(collect(args), 1)...};
         return fill(fmt);
     }
 
