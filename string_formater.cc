@@ -10,7 +10,7 @@ namespace toolbox
         for(int i = 0; i < s_vector_args.size(); i++)
         {
             std::stringstream ss;
-            ss << "%" << i;
+            ss << "{" << i << "}";
             int index = fmt.find(ss.str());
             if(index != -1)
             {
