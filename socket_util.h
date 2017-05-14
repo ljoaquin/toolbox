@@ -5,11 +5,14 @@
 typedef int socklen_t;
 #endif
 
+extern struct sockaddr_in;
+
 namespace toolbox
 {
 
 	int set_reuseaddr(int sockfd);
 	int bind(int sockfd, unsigned short port);
+    int accept(int sockfd, sockaddr_in* addr);
 	
     int connect(int sockfd, const char* ip, unsigned short port);
 

@@ -40,14 +40,15 @@ void run_server()
     // r = toolbox::set_nonblocking(sockfd);
 
     sockaddr_in addr;
-    socklen_t addrlen = sizeof(addr);
+    // socklen_t addrlen = sizeof(addr);
 
     const int buf_max = 128;
     char buf[buf_max];
 
     while(true)
     {
-        int clientfd = ::accept(sockfd, (sockaddr*)&addr, &addrlen);
+        // int clientfd = ::accept(sockfd, (sockaddr*)&addr, &addrlen);
+        int clientfd = toolbox::accept(sockfd, &addr);
 
         printf("clientfd:%d, ip:%s\n", clientfd, inet_ntoa(addr.sin_addr));
 

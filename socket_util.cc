@@ -46,6 +46,12 @@ namespace toolbox
         return ::bind(sockfd, (struct sockaddr*)&addr, sizeof(addr));
     }
 
+    int accept(int sockfd, sockaddr_in* addr)
+    {
+        socklen_t addrlen = sizeof(addr);
+        return ::accept(sockfd, (sockaddr*)addr, &addrlen);
+    }
+
     int connect(int sockfd, const char* ip, unsigned short port)
     {
         struct sockaddr_in addr;
