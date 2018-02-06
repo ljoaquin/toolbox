@@ -60,13 +60,8 @@ void run_client()
                 const int buf_size = 10;
                 char recv_buf[buf_size + 1];
                 memset(recv_buf, 0, buf_size + 1);
-                while((r = ::recv(sockfd, recv_buf, buf_size, 0)) > 0)
-                {
-                    printf("recv:%d, msg:%s, len:%d\n", r, recv_buf, strlen(recv_buf));
-                    memset(recv_buf, 0, buf_size);
-                }
-
-                printf("revc(closed by svr):%d\n", r);
+                r = ::recv(sockfd, recv_buf, buf_size, 0);
+                printf("recv:%d, msg:%s, len:%d\n", r, recv_buf, strlen(recv_buf));
 
                 ::close(sockfd);
 
