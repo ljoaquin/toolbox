@@ -17,14 +17,15 @@ int sell(int n)
 
     while(true)
     {
-        std::lock_guard<std::mutex> lock(g_apple_mutex);
-        if(g_apple <= 0)
         {
-            break;
+            std::lock_guard<std::mutex> lock(g_apple_mutex);
+            if(g_apple <= 0)
+            {
+                break;
+            }
+            g_apple -= 2;
+            std::cout << "sold 2 apple by thread:" << std::this_thread::get_id() << ", apple:" << g_apple << std::endl;
         }
-        g_apple -= 2;
-        std::cout << "sold 2 apple by thread:" << std::this_thread::get_id() << ", apple:" << g_apple << std::endl;
-
         ms_sleep(200);
     }
 
