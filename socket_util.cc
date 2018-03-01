@@ -48,7 +48,7 @@ namespace toolbox
 
     int accept(int sockfd, sockaddr_in* addr)
     {
-        socklen_t addrlen = sizeof(addr);
+        socklen_t addrlen = sizeof(*addr);
         return ::accept(sockfd, (sockaddr*)addr, &addrlen);
     }
 
